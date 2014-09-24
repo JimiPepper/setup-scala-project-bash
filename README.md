@@ -21,7 +21,6 @@ Warning : Actually, the script supposes you have the last version of Scala (2.11
 RECENT FIX
 ----------
 * replace mkdir by mkdir -p. This will allow a better user experience if the directory already exists
-two times in a row
 * fix the reading of the script's parameters, we now handle the project name/package accordingly
 * add fancy colors and bold text when prompting. The answer can be 'y' 'Y' or empty line, the later
 will trigger the default choice (which is highlight in bold and red)
