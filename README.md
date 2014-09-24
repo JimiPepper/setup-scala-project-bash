@@ -9,7 +9,7 @@ The generation includes a complete local scala project with :
 * sbt-eclipse plugin to import your project under Eclipse IDE
 * sbt-assembly plugin to compile your application into a jar file
 * scalatest library for unit testing
-* predefined build.sbt & plugins.sbt 
+* predefined build.sbt & plugins.sbt
 * Boot.scala file to start your project
 * ExampleSpec.scala test file which runs under scalatest
 * An empty local Git repository
@@ -17,10 +17,20 @@ The generation includes a complete local scala project with :
 
 Warning : Actually, the script supposes you have the last version of Scala (2.11.2)
 
+
+RECENT FIX
+----------
+* replace mkdir by mkdir -p. This will allow a better user experience if the directory already exists
+two times in a row
+* fix the reading of the script's parameters, we now handle the project name/package accordingly
+* add fancy colors and bold text when prompting. The answer can be 'y' 'Y' or empty line, the later
+will trigger the default choice (which is highlight in bold and red)
+* if a project with the same name already exists, we quit instantly (avoid errors)
+
 TODO
 ----
 Now, the next step is implementing options for :
-* Choose to create java directories into your project
+* ~~Choose to create java directories into your project~~
 * Generate or not default scala files
 * Add or not default plugins & libraries
 * Choose or not the current version of Scala on computer

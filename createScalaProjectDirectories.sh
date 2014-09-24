@@ -6,14 +6,29 @@
 # $1 : Project name
 # $2 : Package path
 
+# COLORS / FANCY OUTPUT
+RED="\033[0;31m"
+GRN="\033[0;32m"
+BLU="\033[0;34m"
+WHT="\033[0;37m"
+BOLD="\E[1m" # output of "bold=`tput bold`; $bold"
+NRML="\E(B\E[m" # output of "normal=`tput sgr0`; $normal"
+
 # SETUP VARIABLES
 projectName='defaultScalaProject'
 projectPackage='com.example'
 
-echo $projectPackage
-
 # PARAMETERS TESTS
-[ $# -gt 1 ] && projectName=$1 && projectPackage=$2 
+[ "$#" -eq 2 ] && projectName=$1 && projectPackage=$2
+
+# CHECK IF THE PROJECT ALREADY EXISTS
+if [ -d $projectName ]; then
+    echo -e $RED$BOLD"Failed !!!"$WHT$NRML "This name is already used for another project, delete it first."
+    exit 1
+fi
+
+echo -e "Project name : "$GRN$projectName$WHT
+echo -e "Package name : "$GRN$projectPackage$WHT
 
 # SETUP DIRECTORIES
 mkdir -p $projectName/src/main $projectName/src/test $projectName/lib $projectName/project
@@ -22,20 +37,43 @@ pathMain="$projectName/src/main"
 pathTest="$projectName/src/test"
 pathProject="$projectName/project"
 
-mkdir -p $pathMain/resources $pathMain/scala $pathMain/java
-mkdir -p $pathTest/resources $pathTest/scala $pathTest/java
+mkdir -p $pathMain/scala
+mkdir -p $pathTest/scala
 
 # SETUP / CREATE PACKAGE DIRECTORIES
 pathPackageSMain=$pathMain/scala
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSMain="$pathPackageSMain/$dir" ; mkdir -p $pathPackageSMain ; done
-
-pathPackageJMain=$pathMain/java
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJMain="$pathPackageJMain/$dir" ; mkdir -p $pathPackageJMain ; done
+for dir in $(echo $projectPackage | tr '.' ' '); do
+    pathPackageSMain="$pathPackageSMain/$dir"; mkdir -p $pathPackageSMain
+done
 
 pathPackageSTest=$pathTest/scala
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSTest="$pathPackageSTest/$dir" ; mkdir -p $pathPackageSTest ; done
-pathPackageJTest=$pathTest/java
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJTest="$pathPackageJTest/$dir" ; mkdir -p $pathPackageJTest ; done
+for dir in $(echo $projectPackage | tr '.' ' '); do
+    pathPackageSTest="$pathPackageSTest/$dir"; mkdir -p $pathPackageSTest
+done
+
+echo -ne "Do you need a "$GRN$BOLD"resources"$WHT$NRML" directory ? ["$RED$BOLD"Y"$WHT$NRML"|n] "
+read resources_choice
+if [ "$resources_choice" = "y" ] || [ "$resources_choice" = "Y" ] || [ "$resources_choice" = "" ]; then
+    mkdir -p $pathMain/resources
+    mkdir -p $pathTest/resources
+fi
+
+echo -ne "Do you need a "$GRN$BOLD"java"$WHT$NRML "directory ? ["$RED$BOLD"Y"$WHT$NRML"|n] "
+read java_choice
+if [ "$java_choice" = "y" ] || [ "$java_choice" = "Y" ] || [ "$java_choice" = "" ]; then
+    mkdir -p $pathMain/java
+    pathPackageJMain=$pathMain/java
+    for dir in $(echo $projectPackage | tr '.' ' '); do
+        pathPackageJMain="$pathPackageJMain/$dir"; mkdir -p $pathPackageJMain
+    done
+
+    mkdir -p $pathTest/java
+    pathPackageJTest=$pathTest/java
+    for dir in $(echo $projectPackage | tr '.' ' '); do
+        pathPackageJTest="$pathPackageJTest/$dir"; mkdir -p $pathPackageJTest
+    done
+fi
+
 
 # SETUP FILES
 touch $projectName/build.sbt $projectName/README.md
@@ -43,7 +81,7 @@ touch $projectName/build.sbt $projectName/README.md
 # wc -c command counts the last caracter \0
 cat <<EOF >> $projectName/README.md
 $(echo $projectName)
-$(for numero in $(seq 2 $(echo $projectName | wc -c)) ; do echo -n '=' ; done) 
+$(for numero in $(seq 2 $(echo $projectName | wc -c)) ; do echo -n '=' ; done)
 
 Generated Scala Project for SBT
 
@@ -63,7 +101,7 @@ cat <<EOF >> $pathPackageSMain/Boot.scala
 package $(echo $projectPackage)
 
 object Boot extends App {
-	Console.println("Hello World !!")
+        Console.println("Hello World !!")
 }
 EOF
 
@@ -74,10 +112,10 @@ package $(echo $projectPackage).test
 import org.scalatest._
 
 class ExampleSpec extends FunSuite {
-	test("Return a welcome message") {
-		val msg : String = "Hello and welcome"
-		assert(msg == "Hello and welcome")
-	}
+        test("Return a welcome message") {
+                val msg : String = "Hello and welcome"
+                assert(msg == "Hello and welcome")
+        }
 }
 EOF
 
