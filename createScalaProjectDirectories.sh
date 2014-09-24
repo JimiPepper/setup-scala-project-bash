@@ -16,9 +16,7 @@ echo $projectPackage
 [ $# -gt 1 ] && projectName=$1 && projectPackage=$2 
 
 # SETUP DIRECTORIES
-mkdir $projectName
-mkdir $projectName/src $projectName/lib $projectName/project
-mkdir $projectName/src/main $projectName/src/test
+mkdir -p $projectName/src/main $projectName/src/test $projectName/lib $projectName/project
 
 pathMain="$projectName/src/main"
 pathTest="$projectName/src/test"
@@ -27,7 +25,7 @@ pathProject="$projectName/project"
 mkdir $pathMain/resources $pathMain/scala $pathMain/java
 mkdir $pathTest/resources $pathTest/scala $pathTest/java
 
-# SETUP PACKAGE DIRECTORIES
+# SETUP / CREATE PACKAGE DIRECTORIES
 pathPackageSMain=$pathMain/scala
 for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSMain="$pathPackageSMain/$dir" ; mkdir $pathPackageSMain ; done
 
@@ -40,8 +38,8 @@ pathPackageJTest=$pathTest/java
 for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJTest="$pathPackageJTest/$dir" ; mkdir $pathPackageJTest ; done
 
 # SETUP FILES
-touch $projectName/build.sbt
-touch $projectName/README.md
+touch $projectName/build.sbt $projectName/README.md
+
 # wc -c command counts the last caracter \0
 cat <<EOF >> $projectName/README.md
 $(echo $projectName)
