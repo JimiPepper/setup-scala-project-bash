@@ -6,10 +6,15 @@
 # $1 : Project name
 # $2 : Package path
 
+error(){
+	# echo 'ls: invalid option --'\''z'\''' >&2
+	echo 'Try '\''ls --help'\'' for more information.' >&2
+}
+
 # SETUP VARIABLES
 projectName='defaultScalaProject'
 projectPackage='com.example'
-
+error
 echo $projectPackage
 
 # PARAMETERS TESTS
