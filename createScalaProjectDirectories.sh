@@ -22,20 +22,20 @@ pathMain="$projectName/src/main"
 pathTest="$projectName/src/test"
 pathProject="$projectName/project"
 
-mkdir $pathMain/resources $pathMain/scala $pathMain/java
-mkdir $pathTest/resources $pathTest/scala $pathTest/java
+mkdir -p $pathMain/resources $pathMain/scala $pathMain/java
+mkdir -p $pathTest/resources $pathTest/scala $pathTest/java
 
 # SETUP / CREATE PACKAGE DIRECTORIES
 pathPackageSMain=$pathMain/scala
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSMain="$pathPackageSMain/$dir" ; mkdir $pathPackageSMain ; done
+for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSMain="$pathPackageSMain/$dir" ; mkdir -p $pathPackageSMain ; done
 
 pathPackageJMain=$pathMain/java
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJMain="$pathPackageJMain/$dir" ; mkdir $pathPackageJMain ; done
+for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJMain="$pathPackageJMain/$dir" ; mkdir -p $pathPackageJMain ; done
 
 pathPackageSTest=$pathTest/scala
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSTest="$pathPackageSTest/$dir" ; mkdir $pathPackageSTest ; done
+for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSTest="$pathPackageSTest/$dir" ; mkdir -p $pathPackageSTest ; done
 pathPackageJTest=$pathTest/java
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJTest="$pathPackageJTest/$dir" ; mkdir $pathPackageJTest ; done
+for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJTest="$pathPackageJTest/$dir" ; mkdir -p $pathPackageJTest ; done
 
 # SETUP FILES
 touch $projectName/build.sbt $projectName/README.md

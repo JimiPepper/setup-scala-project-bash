@@ -1,0 +1,12 @@
+# The default project created by the script
+defaultScalaProject/
+
+# Emacs temp file
+\#*\#
+
+# Unix-style temp file
+*~
+.*~
+
+# SBT dirs/files
+target/
