@@ -27,4 +27,7 @@ Now, the next step is implementing options for :
 * Add new plugins
 * Add new libraries
 * Create a default project if user uses the script without parameters
+* Add your own plugins that you used to use in your project
+* Write man page
+* Add -h / --help option that indicates how to use this script
 * Some others features to which I haven't thought yet
