@@ -14,8 +14,6 @@ error(){
 # SETUP VARIABLES
 projectName='defaultScalaProject'
 projectPackage='com.example'
-error
-echo $projectPackage
 
 # PARAMETERS TESTS
 [ $# -gt 1 ] && projectName=$1 && projectPackage=$2 
