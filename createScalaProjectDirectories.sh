@@ -6,6 +6,10 @@
 # $1 : Project name
 # $2 : Package path
 
+# SETUP VARIABLES
+projectName='defaultScalaProject'
+projectPackage='com.example'
+
 # SETUP DIRECTORIES
 mkdir $1
 mkdir $1/src $1/lib $1/project
