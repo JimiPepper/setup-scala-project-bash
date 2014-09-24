@@ -7,22 +7,25 @@
 # $2 : Package path
 
 error(){
-	# echo 'ls: invalid option --'\''z'\''' >&2
-	echo 'Try '\''ls --help'\'' for more information.' >&2
+	# echo 'setup-sbt-project.sh: invalid option --'\''z'\''' >&2
+	echo 'Try '\''setup-sbt-project.sh --help'\'' for more information.' >&2
 }
 
 usage(){ 
 	echo 'Usage: ./setup-sbt-project.sh [PROJECT NAME] [PATH_PACKAGE]'
  	echo 'Set up a Scala project for SBT tool\n'
 	echo 'Mandatory arguments to long options are mandatory for short options too.'
-  	echo '-a, --all             write counts for all files, not just directories'
-	echo '    --apparent-size   print apparent sizes, rather than disk usage; although'
-	echo '    --help            display this help and exit'
+	echo '-v, --verbose         enable verbose format'
+	echo '-h, --help            display this help and exit'
       	echo '    --version         output version information and exit'
+	echo '    --nocvs,	    disable local repository creation'
+	echo '    --svn		    create a local SVN repository instead nor Git'
+	echo '    --noplugin	    unable automatic plugin addition'
+	echo '    --nolibrary	    unable automatic library addition'
 } 
 
 version(){
-	echo 'ls (GNU coreutils) 8.20'
+	echo 'setup-sbt-project 1.1'
 	echo 'Github repository : https://github.com/JimiPepper/setup-scala-project-bash'
 	echo 'Written by Romain Philippon'
 }
