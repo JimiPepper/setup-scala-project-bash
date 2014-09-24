@@ -15,13 +15,14 @@ usage(){
 	echo 'Usage: ./setup-sbt-project.sh [PROJECT NAME] [PATH_PACKAGE]'
  	echo 'Set up a Scala project for SBT tool\n'
 	echo 'Mandatory arguments to long options are mandatory for short options too.'
-	echo '-v, --verbose         enable verbose format'
-	echo '-h, --help            display this help and exit'
-      	echo '    --version         output version information and exit'
-	echo '    --nocvs,	    disable local repository creation'
-	echo '    --svn		    create a local SVN repository instead nor Git'
+	echo '-v, --sbtversion	    initialize your project with a specific version of SBT'
 	echo '    --noplugin	    unable automatic plugin addition'
 	echo '    --nolibrary	    unable automatic library addition'
+	echo '    --nocvs,	    disable local repository creation'
+	echo '    --svn		    create a local SVN repository instead nor Git'
+      	echo '    --version         output version information and exit'
+	echo '    --verbose         enable verbose format'
+	echo '-h, --help            display this help and exit'
 } 
 
 version(){
