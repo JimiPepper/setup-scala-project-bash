@@ -31,3 +31,7 @@ Now, the next step is implementing options for :
 * Write man page
 * Add -h / --help option that indicates how to use this script
 * Some others features to which I haven't thought yet
+
+SPECIAL THANKS
+--------------
++ N_BaH member of developpez.net for his advice for handling bash arguments
