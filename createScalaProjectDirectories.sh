@@ -43,7 +43,7 @@ touch $projectName/build.sbt $projectName/README.md
 # wc -c command counts the last caracter \0
 cat <<EOF >> $projectName/README.md
 $(echo $projectName)
-$(for numero in $(seq 2 $(echo $projectName | wc -c)) ; do echo '=' ; done) 
+$(for numero in $(seq 2 $(echo $projectName | wc -c)) ; do echo -n '=' ; done) 
 
 Generated Scala Project for SBT
 
