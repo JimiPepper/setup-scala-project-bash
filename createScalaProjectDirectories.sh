@@ -10,37 +10,42 @@
 projectName='defaultScalaProject'
 projectPackage='com.example'
 
-# SETUP DIRECTORIES
-mkdir $1
-mkdir $1/src $1/lib $1/project
-mkdir $1/src/main $1/src/test
+echo $projectPackage
 
-pathMain="$1/src/main"
-pathTest="$1/src/test"
-pathProject="$1/project"
+# PARAMETERS TESTS
+[ $# -gt 1 ] && projectName=$1 && projectPackage=$2 
+
+# SETUP DIRECTORIES
+mkdir $projectName
+mkdir $projectName/src $projectName/lib $projectName/project
+mkdir $projectName/src/main $projectName/src/test
+
+pathMain="$projectName/src/main"
+pathTest="$projectName/src/test"
+pathProject="$projectName/project"
 
 mkdir $pathMain/resources $pathMain/scala $pathMain/java
 mkdir $pathTest/resources $pathTest/scala $pathTest/java
 
 # SETUP PACKAGE DIRECTORIES
 pathPackageSMain=$pathMain/scala
-for dir in $(echo $2 | tr '.' ' ') ; do pathPackageSMain="$pathPackageSMain/$dir" ; mkdir $pathPackageSMain ; done
+for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSMain="$pathPackageSMain/$dir" ; mkdir $pathPackageSMain ; done
 
 pathPackageJMain=$pathMain/java
-for dir in $(echo $2 | tr '.' ' ') ; do pathPackageJMain="$pathPackageJMain/$dir" ; mkdir $pathPackageJMain ; done
+for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJMain="$pathPackageJMain/$dir" ; mkdir $pathPackageJMain ; done
 
 pathPackageSTest=$pathTest/scala
-for dir in $(echo $2 | tr '.' ' ') ; do pathPackageSTest="$pathPackageSTest/$dir" ; mkdir $pathPackageSTest ; done
+for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSTest="$pathPackageSTest/$dir" ; mkdir $pathPackageSTest ; done
 pathPackageJTest=$pathTest/java
-for dir in $(echo $2 | tr '.' ' ') ; do pathPackageJTest="$pathPackageJTest/$dir" ; mkdir $pathPackageJTest ; done
+for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJTest="$pathPackageJTest/$dir" ; mkdir $pathPackageJTest ; done
 
 # SETUP FILES
-touch $1/build.sbt
-touch $1/README.md
+touch $projectName/build.sbt
+touch $projectName/README.md
 # wc -c command counts the last caracter \0
-cat <<EOF >> $1/README.md
-$(echo $1)
-$(for numero in $(seq 2 $(echo $1 | wc -c)) ; do echo '=' ; done) 
+cat <<EOF >> $projectName/README.md
+$(echo $projectName)
+$(for numero in $(seq 2 $(echo $projectName | wc -c)) ; do echo '=' ; done) 
 
 Generated Scala Project for SBT
 
@@ -57,7 +62,7 @@ touch $pathProject/build.properties $pathProject/plugins.sbt
 
 touch $pathPackageSMain/Boot.scala
 cat <<EOF >> $pathPackageSMain/Boot.scala
-package $(echo $2)
+package $(echo $projectPackage)
 
 object Boot extends App {
 	Console.println("Hello World !!")
@@ -66,7 +71,7 @@ EOF
 
 touch $pathPackageSTest/ExampleSpec.scala
 cat <<EOF >> $pathPackageSTest/ExampleSpec.scala
-package $(echo $2).test
+package $(echo $projectPackage).test
 
 import org.scalatest._
 
@@ -83,14 +88,14 @@ echo 'Init directories...'
 # WRITE BUILD.SBT
 
 organization=''
-for element in $(echo $2 | tr '.' ' ' | rev) ; do organization=$organization.$(echo $element | rev) ; done
+for element in $(echo $projectPackage | tr '.' ' ' | rev) ; do organization=$organization.$(echo $element | rev) ; done
 organization=${organization:1}
 
-cat <<EOF >> $1/build.sbt
+cat <<EOF >> $projectName/build.sbt
 import AssemblyKeys._
 
 // Project settings
-name := "$(echo $1)"
+name := "$(echo $projectName)"
 
 organization := "$(echo $organization)"
 
@@ -101,9 +106,9 @@ scalaVersion := "2.11.2"
 assemblySettings
 
 // Assembly plugin settings
-jarName in assembly := "$(echo $1 | tr ' ' '_' | tr '[:upper:]' '[:lower:]').jar"
+jarName in assembly := "$(echo $projectName | tr ' ' '_' | tr '[:upper:]' '[:lower:]').jar"
 
-mainClass in assembly := Some("$(echo $2).Boot")
+mainClass in assembly := Some("$(echo $projectPackage).Boot")
 
 // Compiler settings
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
@@ -135,6 +140,6 @@ EOF
 echo 'Init sbt plugins (sbt-eclipse, sbt-assembly)'
 
 # INITIALIZE LOCAL REPOSITORY
-git init --quiet $1
+git init --quiet $projectName
 
 echo 'Init local Git repository'
