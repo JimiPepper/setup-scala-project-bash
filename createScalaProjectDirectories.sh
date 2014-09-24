@@ -96,15 +96,24 @@ EOF
 
 touch $pathProject/build.properties $pathProject/plugins.sbt
 
-touch $pathPackageSMain/Boot.scala
-cat <<EOF >> $pathPackageSMain/Boot.scala
+# CREATE SCALA SAMPLE FILE
+echo -ne "Do you want a Scala "$GRN$BOLD"Class sample "$WHT$NRML"(e.g.. helloWorld) ? ["$RED$BOLD"Y"$WHT$NRML"|n] "
+read sample_choice
+if [ "$sample_choice" = "y" ] || [ "$sample_choice" = "Y" ] || [ "$sample_choice" = "" ]; then
+    touch $pathPackageSMain/Boot.scala
+    cat <<EOF >> $pathPackageSMain/Boot.scala
 package $(echo $projectPackage)
 
 object Boot extends App {
         Console.println("Hello World !!")
 }
 EOF
+fi
 
+# CREATE SCALA TEST FILE
+echo -ne "Do you want a Scala "$GRN$BOLD"UniTest sample"$WHT$NRML" ? ["$RED$BOLD"Y"$WHT$NRML"|n] "
+read unit_choice
+if [ "$unit_choice" = "y" ] || [ "$unit_choice" = "Y" ] || [ "$unit_choice" = "" ]; then
 touch $pathPackageSTest/ExampleSpec.scala
 cat <<EOF >> $pathPackageSTest/ExampleSpec.scala
 package $(echo $projectPackage).test
@@ -118,6 +127,7 @@ class ExampleSpec extends FunSuite {
         }
 }
 EOF
+fi
 
 echo 'Init directories...'
 
