@@ -33,30 +33,18 @@ usage(){
 version(){
 	echo 'setup-sbt-project 1.1'
 	echo 'Github repository : https://github.com/JimiPepper/setup-scala-project-bash'
-	echo 'Written by Romain Philippon'
+	echo 'Written by Romain Philippon with the help of William Gouzer'
 	exit 0
 }
 
 makeScalaDir() {
-	mkdir $pathMain/scala $pathTest/scala
-
-	#create package path
-	pathPackageSMain=$pathMain/scala
-	for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSMain="$pathPackageSMain/$dir" ; mkdir $pathPackageSMain ; done
-
-	pathPackageSTest=$pathTest/scala
-	for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSTest="$pathPackageSTest/$dir" ; mkdir $pathPackageSTest ; done
+	mkdir -p $1/scala/$(echo $projectPackage | tr '.' '/')
+	mkdir -p $2/scala/$(echo $projectPackage | tr '.' '/')
 }
 
 makeJavaDir() {
-	mkdir $pathMain/java $pathTest/java
-
-	# create package path
-	pathPackageJMain=$pathMain/java
-	for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJMain="$pathPackageJMain/$dir" ; mkdir $pathPackageJMain ; done
-	
-	pathPackageJTest=$pathTest/java
-	for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJTest="$pathPackageJTest/$dir" ; mkdir $pathPackageJTest ; done
+	mkdir -p $1/java/$(echo $projectPackage | tr '.' '/')
+	mkdir -p $2/java/$(echo $projectPackage | tr '.' '/')
 }
 
 # SETUP SCRIPT VARIABLES
@@ -74,43 +62,44 @@ useJavaDir=1
 useVerbose=0
 
 # PARAMETERS TESTS
-[ $# -lt 1 ] && error
+if [ $# -gt 1 ]
+then
+	projectName=$1 && projectPackage=$2 
 
-projectName=$1 && projectPackage=$2 
+	options=$(getopt -o h,q: -l nojava noplugin nolibrary nocvs svn quiet version verbose help -- "$@") 
 
-options=$(getopt -o h,q: -l nojava noplugin nolibrary nocvs svn quiet version verbose help -- "$@") 
+	# éclatement de $options en $1, $2... 
+	set -- $options 
 
-# éclatement de $options en $1, $2... 
-set -- $options 
-
-while true; do 
-	case "$1" in
-	--nojava) useJavaDir=1
-		shift;;
-	--noplugin) usePlugin=0
-		shift;;
-	--nolibrary) useLibrary=0
-		shift;;
-	--nocvs) useCVS=0
-		shift;;
-	--svn) useGit=0	
-		shift;;
-	--quiet) quiet=1
-		shift;;
-	--version) version
-		shift;;
-	--verbose) useVerbose=1 
-	-b) traitement $2 
-		shift 2;; 
-	-h|--help) usage 
-		shift;; 
-	--) # end options 
-		shift
-		break;; 
-	*) error 
-		shift;; 
-	esac 
-done
+	while true 
+	do 
+		case "$1" in
+		--nojava) useJavaDir=0
+			shift;;
+		--noplugin) usePlugin=0
+			shift;;
+		--nolibrary) useLibrary=0
+			shift;;
+		--nocvs) useCVS=0
+			shift;;
+		--svn) useGit=0	
+			shift;;
+		--quiet) quiet=1
+			shift;;
+		--version) version
+			shift;;
+		--verbose) useVerbose=1
+		       shift;;	
+		-h|--help) usage 
+			shift;; 
+		--) echo "Fin param" # end options 
+			shift
+			break;; 
+		*) error 
+			shift;; 
+		esac 
+	done
+fi
 
 # SETUP DIRECTORIES
 mkdir -p $projectName/src/main $projectName/src/test $projectName/lib $projectName/project
@@ -120,6 +109,9 @@ pathTest="$projectName/src/test"
 pathProject="$projectName/project"
 
 mkdir $pathMain/resources $pathTest/resources
+
+[ $useJavaDir -eq 1 ] && makeJavaDir $pathMain $pathTest
+makeScalaDir $pathMain $pathTest
 
 # SETUP FILES
 touch $projectName/build.sbt $projectName/README.md
@@ -142,7 +134,7 @@ EOF
 
 touch $pathProject/build.properties $pathProject/plugins.sbt
 
-touch $pathPackageSMain/Boot.scala
+touch $pathMain/scala/"(echo $projectPackage | tr '.' '/')/Boot.scala
 cat <<EOF >> $pathPackageSMain/Boot.scala
 package $(echo $projectPackage)
 
@@ -151,7 +143,7 @@ object Boot extends App {
 }
 EOF
 
-touch $pathPackageSTest/ExampleSpec.scala
+touch $pathTest"/scala/"$(echo $projectPackage | tr '.' '/')/ExampleSpec.scala
 cat <<EOF >> $pathPackageSTest/ExampleSpec.scala
 package $(echo $projectPackage).test
 
@@ -222,6 +214,6 @@ EOF
 echo 'Init sbt plugins (sbt-eclipse, sbt-assembly)'
 
 # INITIALIZE LOCAL REPOSITORY
-git init --quiet $projectName
+[ $useCVS -eq 1 ] && if [ $useGit -eq 1 ] ; then git init --quiet $projectName ; else svnadmin create projectName
 
 echo 'Init local Git repository'
