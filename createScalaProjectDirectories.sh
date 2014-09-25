@@ -10,6 +10,7 @@
 error(){
 	# echo 'setup-sbt-project.sh: invalid option --'\''z'\''' >&2
 	echo 'Try '\''setup-sbt-project.sh --help'\'' for more information.' >&2
+	exit 1
 }
 
 usage(){ 
@@ -20,18 +21,42 @@ usage(){
 	echo '    --nojava	    unable automatic creation java directories'
 	echo '    --noplugin	    unable automatic plugin addition'
 	echo '    --nolibrary	    unable automatic library addition'
-	echo '    --nocvs,	    disable local repository creation'
+	echo '    --nocvs	    disable local repository creation'
 	echo '    --svn		    create a local SVN repository instead nor Git'
 	echo '-q, --quiet	    perform operations quietly'
       	echo '    --version         output version information and exit'
 	echo '    --verbose         enable verbose format'
 	echo '-h, --help            display this help and exit'
+	exit 0;
 } 
 
 version(){
 	echo 'setup-sbt-project 1.1'
 	echo 'Github repository : https://github.com/JimiPepper/setup-scala-project-bash'
 	echo 'Written by Romain Philippon'
+	exit 0
+}
+
+makeScalaDir() {
+	mkdir $pathMain/scala $pathTest/scala
+
+	#create package path
+	pathPackageSMain=$pathMain/scala
+	for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSMain="$pathPackageSMain/$dir" ; mkdir $pathPackageSMain ; done
+
+	pathPackageSTest=$pathTest/scala
+	for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSTest="$pathPackageSTest/$dir" ; mkdir $pathPackageSTest ; done
+}
+
+makeJavaDir() {
+	mkdir $pathMain/java $pathTest/java
+
+	# create package path
+	pathPackageJMain=$pathMain/java
+	for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJMain="$pathPackageJMain/$dir" ; mkdir $pathPackageJMain ; done
+	
+	pathPackageJTest=$pathTest/java
+	for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJTest="$pathPackageJTest/$dir" ; mkdir $pathPackageJTest ; done
 }
 
 # SETUP SCRIPT VARIABLES
@@ -45,9 +70,47 @@ useCVS=1
 useGit=1
 usePlugin=1
 useLibrary=1
+useJavaDir=1
+useVerbose=0
 
 # PARAMETERS TESTS
-[ $# -gt 1 ] && projectName=$1 && projectPackage=$2 
+[ $# -lt 1 ] && error
+
+projectName=$1 && projectPackage=$2 
+
+options=$(getopt -o h,q: -l nojava noplugin nolibrary nocvs svn quiet version verbose help -- "$@") 
+
+# éclatement de $options en $1, $2... 
+set -- $options 
+
+while true; do 
+	case "$1" in
+	--nojava) useJavaDir=1
+		shift;;
+	--noplugin) usePlugin=0
+		shift;;
+	--nolibrary) useLibrary=0
+		shift;;
+	--nocvs) useCVS=0
+		shift;;
+	--svn) useGit=0	
+		shift;;
+	--quiet) quiet=1
+		shift;;
+	--version) version
+		shift;;
+	--verbose) useVerbose=1 
+	-b) traitement $2 
+		shift 2;; 
+	-h|--help) usage 
+		shift;; 
+	--) # end options 
+		shift
+		break;; 
+	*) error 
+		shift;; 
+	esac 
+done
 
 # SETUP DIRECTORIES
 mkdir -p $projectName/src/main $projectName/src/test $projectName/lib $projectName/project
@@ -56,20 +119,7 @@ pathMain="$projectName/src/main"
 pathTest="$projectName/src/test"
 pathProject="$projectName/project"
 
-mkdir $pathMain/resources $pathMain/scala $pathMain/java
-mkdir $pathTest/resources $pathTest/scala $pathTest/java
-
-# SETUP / CREATE PACKAGE DIRECTORIES
-pathPackageSMain=$pathMain/scala
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSMain="$pathPackageSMain/$dir" ; mkdir $pathPackageSMain ; done
-
-pathPackageJMain=$pathMain/java
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJMain="$pathPackageJMain/$dir" ; mkdir $pathPackageJMain ; done
-
-pathPackageSTest=$pathTest/scala
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageSTest="$pathPackageSTest/$dir" ; mkdir $pathPackageSTest ; done
-pathPackageJTest=$pathTest/java
-for dir in $(echo $projectPackage | tr '.' ' ') ; do pathPackageJTest="$pathPackageJTest/$dir" ; mkdir $pathPackageJTest ; done
+mkdir $pathMain/resources $pathTest/resources
 
 # SETUP FILES
 touch $projectName/build.sbt $projectName/README.md
