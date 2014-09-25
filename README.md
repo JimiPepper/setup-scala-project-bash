@@ -44,4 +44,5 @@ interpreter, java -jar {...} compile, run, test and so on)
 * Add your own plugins that you used to use in your project
 * Write man page
 * Add -h / --help option that indicates how to use this script
+* Add alias inside .bashrc to launch 
 * Some others features to which I haven't thought yet
