@@ -20,6 +20,7 @@ usage(){
 	echo '    --nolibrary	    unable automatic library addition'
 	echo '    --nocvs,	    disable local repository creation'
 	echo '    --svn		    create a local SVN repository instead nor Git'
+	echo '-q, --quiet	    perform operations quietly'
       	echo '    --version         output version information and exit'
 	echo '    --verbose         enable verbose format'
 	echo '-h, --help            display this help and exit'
