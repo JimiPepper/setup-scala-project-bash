@@ -6,6 +6,7 @@
 # $1 : Project name
 # $2 : Package path
 
+# SCRIPT FUNCTIONS
 error(){
 	# echo 'setup-sbt-project.sh: invalid option --'\''z'\''' >&2
 	echo 'Try '\''setup-sbt-project.sh --help'\'' for more information.' >&2
@@ -15,7 +16,8 @@ usage(){
 	echo 'Usage: ./setup-sbt-project.sh [PROJECT NAME] [PATH_PACKAGE]'
  	echo 'Set up a Scala project for SBT tool\n'
 	echo 'Mandatory arguments to long options are mandatory for short options too.'
-	echo '-v, --sbtversion	    initialize your project with a specific version of SBT'
+	# echo '-v, --sbtversion	    initialize your project with a specific version of SBT'
+	echo '    --nojava	    unable automatic creation java directories'
 	echo '    --noplugin	    unable automatic plugin addition'
 	echo '    --nolibrary	    unable automatic library addition'
 	echo '    --nocvs,	    disable local repository creation'
@@ -32,9 +34,17 @@ version(){
 	echo 'Written by Romain Philippon'
 }
 
-# SETUP VARIABLES
+# SETUP SCRIPT VARIABLES
+# environment variables
 projectName='defaultScalaProject'
 projectPackage='com.example'
+
+# variables to handle options
+quiet=0
+useCVS=1
+useGit=1
+usePlugin=1
+useLibrary=1
 
 # PARAMETERS TESTS
 [ $# -gt 1 ] && projectName=$1 && projectPackage=$2 
