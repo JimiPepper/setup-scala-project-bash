@@ -21,6 +21,7 @@ useJavaDir=1
 useVerbose=0
 
 # SCRIPT FUNCTIONS
+#
 error() {
 	# echo 'setup-sbt-project.sh: invalid option --'\''z'\''' >&2
 	echo 'Try '\''setup-sbt-project.sh --help'\'' for more information.' >&2
@@ -29,16 +30,17 @@ error() {
 
 usage() { 
 	echo 'Usage: ./setup-sbt-project.sh [PROJECT NAME] [PATH_PACKAGE]'
- 	echo 'Set up a Scala project for SBT tool\n'
+ 	echo 'Set up a Scala project for SBT tool'
+ 	echo
 	echo 'Mandatory arguments to long options are mandatory for short options too.'
 	# echo '-v, --sbtversion	    initialize your project with a specific version of SBT'
-	echo '    --nojava	    unable automatic creation java directories'
-	echo '    --noplugin	unable automatic plugin addition'
-	echo '    --nolibrary	unable automatic library addition'
-	echo '    --nocvs	    disable local repository creation'
-	echo '    --svn		    create a local SVN repository instead nor Git'
-	echo '-q, --quiet	    perform operations quietly'
-    echo '    --version     output version information and exit'
+	echo '    --nojava      unable automatic creation java directories'
+	echo '    --noplugin    unable automatic plugin addition'
+	echo '    --nolibrary   unable automatic library addition'
+	echo '    --nocvs       disable local repository creation'
+	echo '    --svn         create a local SVN repository instead nor Git'
+	echo '-q, --quiet       perform operations quietly'
+    echo '-v, --version     output version information and exit'
 	echo '    --verbose     enable verbose format'
 	echo '-h, --help        display this help and exit'
 	
@@ -80,6 +82,7 @@ makeReadMeMarkDown() {
 EOF
 }
 
+# Specific functions to run the script
 makeBuildSbt() {
 	organization=''
 	for element in $(echo $projectPackage | tr '.' ' ' | rev) ; do organization=$organization.$(echo $element | rev) ; done
@@ -112,6 +115,56 @@ makeBuildSbt() {
 	
 EOF
 }
+
+makePluginsSBT() {
+	# sbt-eclipse
+
+	cat <<EOF >> $pathProject/plugins.sbt
+	// Make SBT projects compatible with Eclipse IDE
+	// SBT command : eclipse
+	// https://github.com/typesafehub/sbteclipse'
+	addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.5.0")
+
+EOF
+
+	# sbt-assembly
+	cat <<EOF >> $pathProject/plugins.sbt
+	// Compile SBT projects files into jar
+	// SBT command : assembly
+	//https://github.com/sbt/sbt-assembly
+	addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")
+
+EOF
+}
+
+makeBootScalaFile() {
+	cat <<EOF >> $pathMain/scala/$(echo $projectPackage | tr '.' '/')/Boot.scala
+	package $(echo $projectPackage)
+
+	object Boot extends App {
+		Console.println("Hello World !!")
+	}
+EOF
+}
+
+makeExampleSpecScalaFile() {
+	cat <<EOF >> $pathTest/scala/$(echo $projectPackage | tr '.' '/')/ExampleSpec.scala
+	package $(echo $projectPackage).test
+
+	import org.scalatest._
+
+	class ExampleSpec extends FunSuite {
+		test("Return a welcome message") {
+			val msg : String = "Hello and welcome"
+			assert(msg == "Hello and welcome")
+		}
+	}
+EOF
+}
+
+#addCVSRepository() {
+	#[ $useCVS -eq 1 ] && if [ $useGit -eq 1 ] ; then git init --quiet $projectName ; else svnadmin create $projectName	
+#}
 
 
 # PARAMETERS TESTS
@@ -167,61 +220,27 @@ mkdir $pathMain/resources $pathTest/resources
 [ $useJavaDir -eq 1 ] && makeJavaDir $pathMain $pathTest
 makeScalaDir $pathMain $pathTest
 
-# SETUP FILES
+echo 'Init directories...'
 
+# SETUP FILES
 # WRITE README.md
 makeReadMeMarkDown
 
 # WRITE Boot.scala
-cat <<EOF >> $pathMain/scala/$(echo $projectPackage | tr '.' '/')/Boot.scala
-package $(echo $projectPackage)
-
-object Boot extends App {
-	Console.println("Hello World !!")
-}
-EOF
+makeBootScalaFile
 
 # WRITE ExampleSpec.scala
-cat <<EOF >> $pathTest/scala/$(echo $projectPackage | tr '.' '/')/ExampleSpec.scala
-package $(echo $projectPackage).test
-
-import org.scalatest._
-
-class ExampleSpec extends FunSuite {
-	test("Return a welcome message") {
-		val msg : String = "Hello and welcome"
-		assert(msg == "Hello and welcome")
-	}
-}
-EOF
-
-echo 'Init directories...'
+makeExampleSpecScalaFile
 
 # WRITE BUILD.SBT
 makeBuildSbt
 
 # ADD PLUGINS
-# sbt-eclipse
-cat <<EOF >> $pathProject/plugins.sbt
-// Make SBT projects compatible with Eclipse IDE
-// SBT command : eclipse
-// https://github.com/typesafehub/sbteclipse'
-addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.5.0")
-
-EOF
-
-# sbt-assembly
-cat <<EOF >> $pathProject/plugins.sbt
-// Compile SBT projects files into jar
-// SBT command : assembly
-//https://github.com/sbt/sbt-assembly
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")
-
-EOF
+makePluginsSBT
 
 echo 'Init sbt plugins (sbt-eclipse, sbt-assembly)'
 
 # INITIALIZE LOCAL REPOSITORY
-[ $useCVS -eq 1 ] && if [ $useGit -eq 1 ] ; then git init --quiet $projectName ; else svnadmin create $projectName
+# addCVSRepository
 
 echo 'Init local repository'
